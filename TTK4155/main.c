@@ -15,14 +15,15 @@
 
 int main(void)
 {
-	USART_init(F_CPU/16/BAUD-1);
+	USART_init(9600);
 	
-	fdevopen(&USART_Transmit, &USART_Receive);
+	fdevopen(&USART_Transmit, &USART_Receive); //redirect stdout/stdin to uart
+	
 	printf("Hello world!");
 	
     while (1) 
     {
-		char c = USART_Receive();
-		USART_Transmit(c);
+		char c = USART_Receive(NULL);
+		USART_Transmit(c, NULL);
     }
 }

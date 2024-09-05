@@ -1,3 +1,10 @@
-void USART_init(unsigned int ubrr);
-void USART_Transmit( unsigned char data);
-unsigned char USART_Receive(void);
+#ifndef UART_H
+#define UART_H
+
+#include <stdio.h>
+
+void USART_init(uint32_t baud);
+int USART_Transmit(char data, FILE* f );
+int USART_Receive(FILE* f );
+
+#endif
