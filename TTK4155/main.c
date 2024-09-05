@@ -7,32 +7,23 @@
 #define F_CPU 4915200
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdio.h>
 
-#define FOSC 1843200// Clock Speed
+// Driver includes
+#include "drivers/uart.h"
+
 #define BAUD 9600
-#define MYUBRR FOSC/16/BAUD-1
 
 int main(void)
 {
-	// Create a square wave for testing purposes
-	//DDRA = 00000001; // Set PA0 output
-    //while (1) 
-    //{
-	//	PORTA |= (1<<PA0);			// Set PA0 high
-	//	_delay_ms(100);
-	//	PORTA &= ~(1<<PA0);			// Set PA0 low
-	//	_delay_ms(100);
-    //}
+	USART_init(F_CPU/16/BAUD-1);
 	
-	// Test to echo back received char
-	//USART_init(MYUBRR);
-	//while (1)
-	//{
-	//	char test_char = USART_Receive();
-	//	USART_Transmit(test_char);
-	//}
+	fdevopen(&USART_Transmit, &USART_Receive);
+	printf("Hello world!");
 	
-	// Test to bind the printf function
-	fdevopen(&USART_Transmit, &USART_Receive)
-	printf("Hello world!")
+    while (1) 
+    {
+		char c = USART_Receive();
+		USART_Transmit(c);
+    }
 }
