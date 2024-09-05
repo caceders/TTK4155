@@ -4,13 +4,12 @@
  * Created: 02.09.2024 12:14:52
  * Author : Carl Anders J. Cederström, Simen Haug & Siver Grimstad
  */ 
-#define F_CPU 4915200
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
 
 // Driver includes
-#include "drivers/uart.h"
+#include "uart.h"
 
 #define BAUD 9600
 
