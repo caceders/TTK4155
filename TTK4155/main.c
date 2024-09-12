@@ -2,7 +2,7 @@
  * TTK4155.c
  *
  * Created: 02.09.2024 12:14:52
- * Author : Carl Anders J. Cederström, Simen Haug & Siver Grimstad
+ * Author : Carl Anders J. Cederstrï¿½m, Simen Haug & Siver Grimstad
  */ 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -10,6 +10,7 @@
 
 // Driver includes
 #include "uart.h"
+#include "xmem.h"
 
 #define BAUD 9600
 
@@ -19,11 +20,22 @@ int main(void)
 	
 	fdevopen(&USART_Transmit, &USART_Receive); //redirect stdout/stdin to uart
 	
-	printf("Hello world!");
+	XMEM_init();
+
+	printf("Hello world!\n\r");
+
+	SRAM_test();
 	
+	volatile char* adc_addr = 0x1401;
+	volatile char* sram_addr = 0x1801;
+	volatile char* oled_addr = 0x1001;
     while (1) 
     {
-		char c = USART_Receive(NULL);
-		USART_Transmit(c, NULL);
+		*adc_addr = 1;
+		_delay_ms(100);
+		*sram_addr = 1;
+		_delay_ms(100);
+		*oled_addr = 1;
+		_delay_ms(100);
     }
 }
