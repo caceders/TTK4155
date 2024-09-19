@@ -12,6 +12,7 @@
 #include "uart.h"
 #include "xmem.h"
 #include "adc.h"
+#include "human_interface.h"
 
 #define BAUD 9600
 
@@ -27,17 +28,51 @@ int main(void)
 
 	SRAM_test();
 
-	ADC_handle_t adc;
-	adc.addr = 0x1400;
-	adc.mode = ADC_MODE_HARDWIRED;
-	adc.sample_time_us = (2*4*9)/(F_CPU/1000000) + 2; //according to datasheet + margin
+	init_human_interface();
+	calibrate_joy_position();
+	//volatile char* sram_addr = 0x1801;
+	//volatile char* oled_addr = 0x1001;
 
-	volatile char* sram_addr = 0x1801;
-	volatile char* oled_addr = 0x1001;
+	//enable pullup on joystick button
+	PORTB |= (1 << PIN1);
+
     while (1) 
     {
-		ADC_read(&adc);
-		printf("ADC values: ch0: %u, ch1: %u, ch2:%u, ch3: %u\n\r", adc.ch[0], adc.ch[1], adc.ch[2], adc.ch[3]);
-		_delay_ms(1000);
+		read_human_interface();
+		
+		position pos = get_joy_position();
+		printf("\n\rbuttons: l:%u, r:%u, joy:%u", get_l(), get_r(), get_j());
+		printf("\n\rx: %d, y: %d => ", pos.x_pos, pos.y_pos);
+		switch (get_joy_direction())
+		{
+		case NEUTRAL:
+			printf("NEUTRAL");
+			break;
+		
+		case UP:
+			printf("UP");
+			break;
+
+		case DOWN:
+			printf("DOWN");
+			break;
+
+		case LEFT:
+			printf("LEFT");
+			break;
+
+		case RIGHT:
+			printf("RIGHT");
+			break;
+
+		case UNDEFINED:
+			printf("????");
+			break;
+		
+		default:
+			break;
+		}	
+
+		_delay_ms(1001);
     }
 }

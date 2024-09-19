@@ -1,12 +1,13 @@
 
-SOURCE_DIRS := drivers
+SOURCE_DIRS := drivers src
+INCLUDE_DIRS := drivers include
 # List all source files to be compiled; separate with space
 SOURCE_FILES := main.c $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
 
-SYMBOLS := -DDEBUG -DF_CPU=4915200UL $(foreach dir, $(SOURCE_DIRS), -I$(dir))
+SYMBOLS := -DDEBUG -DF_CPU=4915200UL $(foreach dir, $(INCLUDE_DIRS), -I$(dir))
 
 # Feel free to ignore anything below this line
 PROGRAMMER := atmelice_isp
