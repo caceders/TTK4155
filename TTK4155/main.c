@@ -11,6 +11,7 @@
 // Driver includes
 #include "uart.h"
 #include "xmem.h"
+#include "adc.h"
 
 #define BAUD 9600
 
@@ -25,17 +26,18 @@ int main(void)
 	printf("Hello world!\n\r");
 
 	SRAM_test();
-	
-	volatile char* adc_addr = 0x1401;
+
+	ADC_handle_t adc;
+	adc.addr = 0x1400;
+	adc.mode = ADC_MODE_HARDWIRED;
+	adc.sample_time_us = (2*4*9)/(F_CPU/1000000) + 2; //according to datasheet + margin
+
 	volatile char* sram_addr = 0x1801;
 	volatile char* oled_addr = 0x1001;
     while (1) 
     {
-		*adc_addr = 1;
-		_delay_ms(100);
-		*sram_addr = 1;
-		_delay_ms(100);
-		*oled_addr = 1;
-		_delay_ms(100);
+		ADC_read(&adc);
+		printf("ADC values: ch0: %u, ch1: %u, ch2:%u, ch3: %u\n\r", adc.ch[0], adc.ch[1], adc.ch[2], adc.ch[3]);
+		_delay_ms(1000);
     }
 }
