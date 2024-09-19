@@ -13,7 +13,7 @@ typedef struct ADC_handle_t{
     uint8_t config;
     ADC_mode mode;
     uint8_t ch[4];
-    const uint16_t sample_time_us;
+    uint16_t sample_time_us;
 }ADC_handle_t;
 
 void ADC_read(ADC_handle_t* adch);

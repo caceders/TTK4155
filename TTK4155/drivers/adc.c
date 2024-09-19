@@ -1,6 +1,6 @@
 #include "adc.h"
 
-#define __DELAY_BACKWARD_COMPATIBLE__
+#define __DELAY_BACKWARD_COMPATIBLE__ //allows non compile time constants in delay functions
 #include <util/delay.h>
 
 void ADC_read(ADC_handle_t* adch){
