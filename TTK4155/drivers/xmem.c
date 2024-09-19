@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 void XMEM_init(){
-    MCUCR |= (1<<SRE);
+    SFIOR |= (1 << XMM2 );
+    MCUCR |= (1<<SRE); //Enable external memory interface
 }
 
 void SRAM_test(void){
