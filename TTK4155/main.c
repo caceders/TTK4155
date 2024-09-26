@@ -56,6 +56,8 @@ int main(void)
 	textbox_get_default(&tbh, framebuffer);
 
 	printf("Hello world!\n\r");
+	//textbox_printline(&tbh, "inverted", 1);
+	textbox_printline(&tbh, "not inverted", 0);
 
 	//memcpy(framebuffer, font5['Q'-32], 5);
 	OLED_write(&oledh, framebuffer);

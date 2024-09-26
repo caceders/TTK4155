@@ -44,3 +44,20 @@ void textbox_newline(textbox_handle_t* tbh){
     tbh->carriage_y %= tbh->rows;
     tbh->carriage_x = 0;
 }
+
+void textbox_printline(textbox_handle_t* tbh, char* string, uint8_t inverted){
+    uint8_t len = strlen(string);
+    for(uint8_t i = 0; i < len; i++){
+        textbox_put_char(tbh, string[i]);
+        if(tbh->carriage_x + tbh->font_width > tbh->pixel_width){
+            break;
+        }
+    }
+
+    if(inverted){
+        for(uint8_t i = 0; i < tbh->pixel_width; i++){
+            tbh->framebuffer[tbh->carriage_y * tbh->pixel_width + i] = ~tbh->framebuffer[tbh->carriage_y * tbh->pixel_width + i];
+        }
+    }
+    textbox_newline(tbh);
+}
