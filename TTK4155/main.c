@@ -7,38 +7,65 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <string.h>
 
 // Driver includes
 #include "uart.h"
 #include "xmem.h"
 #include "adc.h"
+#include "oled.h"
 #include "human_interface.h"
+#include "textbox.h"
 
 #define BAUD 9600
+
+char* framebuffer = 0x1800;
+
+textbox_handle_t tbh;
+
+int my_putc(char data, FILE* f )
+{
+	(void)f;
+	USART_Transmit(data, f);
+	textbox_put_char(&tbh, data);
+}
 
 int main(void)
 {
 	USART_init(9600);
 	
-	fdevopen(&USART_Transmit, &USART_Receive); //redirect stdout/stdin to uart
+	fdevopen(&my_putc, &USART_Receive); //redirect stdout/stdin to uart
 	
 	XMEM_init();
 
-	printf("Hello world!\n\r");
-
-	SRAM_test();
+	//SRAM_test();
 
 	init_human_interface();
 	calibrate_joy_position();
 	//volatile char* sram_addr = 0x1801;
 	//volatile char* oled_addr = 0x1001;
 
+	OLED_handle_t oledh;
+	oledh.cmd_addr = 0x1000;
+	oledh.data_addr = 0x1200;
+	oledh.columns = 128;
+	oledh.pages = 8;
+	OLED_init(&oledh);
+
+	memset(framebuffer, 0, 128*8);
+	textbox_get_default(&tbh, framebuffer);
+
+	printf("Hello world!\n\r");
+
+	//memcpy(framebuffer, font5['Q'-32], 5);
+	OLED_write(&oledh, framebuffer);
+
 	//enable pullup on joystick button
 	PORTB |= (1 << PIN1);
 
     while (1) 
     {
-		read_human_interface();
+		/*read_human_interface();
 		
 		position pos = get_joy_position();
 		printf("\n\rbuttons: l:%u, r:%u, joy:%u", get_l(), get_r(), get_j());
@@ -73,6 +100,10 @@ int main(void)
 			break;
 		}	
 
-		_delay_ms(1001);
+		_delay_ms(1000);
+		*/
+		char c = USART_Receive(NULL);
+		printf("%c", c);
+		OLED_write(&oledh, framebuffer);
     }
 }
