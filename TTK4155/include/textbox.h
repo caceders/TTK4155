@@ -12,6 +12,7 @@ typedef struct textbox_handle_t{
     uint8_t carriage_y;
     uint8_t font_width;
     unsigned char** font;
+    uint8_t inverted;
     uint8_t font_ascii_offset;
 }textbox_handle_t;
 

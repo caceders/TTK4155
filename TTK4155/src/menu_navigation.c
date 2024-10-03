@@ -27,5 +27,5 @@ void render_menu(textbox_handle_t* tbh){
     tbh->carriage_x = 0;
     tbh->carriage_y = 0;
     
-    tbh->framebuffer.
+    //tbh->framebuffer.
 }

@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void XMEM_init(){
     SFIOR |= (1 << XMM2 );

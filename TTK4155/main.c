@@ -19,7 +19,7 @@
 
 #define BAUD 9600
 
-char* framebuffer = 0x1800;
+char* framebuffer = (uint8_t*)0x1800; //SRAM address
 
 textbox_handle_t tbh;
 
@@ -46,8 +46,8 @@ int main(void)
 	//volatile char* oled_addr = 0x1001;
 
 	OLED_handle_t oledh;
-	oledh.cmd_addr = 0x1000;
-	oledh.data_addr = 0x1200;
+	oledh.cmd_addr = (uint8_t*)0x1000;
+	oledh.data_addr = (uint8_t*)0x1200;
 	oledh.columns = 128;
 	oledh.pages = 8;
 	OLED_init(&oledh);
@@ -57,7 +57,9 @@ int main(void)
 
 	printf("Hello world!\n\r");
 	//textbox_printline(&tbh, "inverted", 1);
-	textbox_printline(&tbh, "not inverted", 0);
+	printf("Not inverted!\n\r");
+	tbh.inverted = 1;
+	printf("Inverted!!\n\r");
 
 	//memcpy(framebuffer, font5['Q'-32], 5);
 	OLED_write(&oledh, framebuffer);

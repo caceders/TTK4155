@@ -2,12 +2,13 @@
 
 
 void OLED_init(OLED_handle_t* oledh){
-    *(oledh->cmd_addr) = OLED_SET_DISPLAY_ON;
+    *(oledh->cmd_addr) = OLED_SET_DISPLAY_OFF;
     *(oledh->cmd_addr) = OLED_SET_ENTIRE_DISPLAY_OFF;
     *(oledh->cmd_addr) = OLED_SET_SCAN_DIRECTION_REMAPPED;
     *(oledh->cmd_addr) = OLED_SET_SEGMENT_REMAPPED;
     OLED_set_addressing_mode(oledh, OLED_ADDRESSING_HORIZONTAL);
     OLED_clear(oledh);
+    *(oledh->cmd_addr) = OLED_SET_DISPLAY_ON;
 }
 
 void OLED_clear(OLED_handle_t* oledh){
