@@ -70,7 +70,7 @@ void textbox_newline(textbox_handle_t* tbh){
     tbh->carriage_x = 0;
 }
 
-void textbox_printline(textbox_handle_t* tbh, char* string, uint8_t inverted){
+void textbox_print(textbox_handle_t* tbh, char* string){
     uint8_t len = strlen(string);
     for(uint8_t i = 0; i < len; i++){
         textbox_put_char(tbh, string[i]);
@@ -78,11 +78,9 @@ void textbox_printline(textbox_handle_t* tbh, char* string, uint8_t inverted){
             break;
         }
     }
+}
 
-    if(inverted){
-        for(uint8_t i = 0; i < tbh->pixel_width; i++){
-            tbh->framebuffer[tbh->carriage_y * tbh->pixel_width + i] = ~tbh->framebuffer[tbh->carriage_y * tbh->pixel_width + i];
-        }
-    }
+void textbox_println(textbox_handle_t* tbh, char* string){
+    textbox_print(tbh, string);
     textbox_newline(tbh);
 }

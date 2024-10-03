@@ -14,6 +14,8 @@ typedef struct menu_handle_t{
 
 }menu_handle_t;
 
+void set_active_menu(menu_handle_t* menu);
+
 void next_sub_menu();
 
 void previous_sub_menu();

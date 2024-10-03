@@ -16,6 +16,8 @@
 #include "oled.h"
 #include "human_interface.h"
 #include "textbox.h"
+#include "menu_navigation.h"
+#include "menu.h"
 
 #define BAUD 9600
 
@@ -27,7 +29,7 @@ int my_putc(char data, FILE* f )
 {
 	(void)f;
 	USART_Transmit(data, f);
-	textbox_put_char(&tbh, data);
+	//textbox_put_char(&tbh, data);
 }
 
 int main(void)
@@ -55,11 +57,8 @@ int main(void)
 	memset(framebuffer, 0, 128*8);
 	textbox_get_default(&tbh, framebuffer);
 
-	printf("Hello world!\n\r");
-	//textbox_printline(&tbh, "inverted", 1);
-	printf("Not inverted!\n\r");
-	tbh.inverted = 1;
-	printf("Inverted!!\n\r");
+	initialize_menu();
+	render_menu(&tbh);
 
 	//memcpy(framebuffer, font5['Q'-32], 5);
 	OLED_write(&oledh, framebuffer);
@@ -67,47 +66,29 @@ int main(void)
 	//enable pullup on joystick button
 	PORTB |= (1 << PIN1);
 
+	printf("Hello world!\n\r");
+
+	direction last_dir = NEUTRAL;
+
     while (1) 
     {
-		/*read_human_interface();
+		read_human_interface();
 		
-		position pos = get_joy_position();
-		printf("\n\rbuttons: l:%u, r:%u, joy:%u", get_l(), get_r(), get_j());
-		printf("\n\rx: %d, y: %d => ", pos.x_pos, pos.y_pos);
-		switch (get_joy_direction())
-		{
-		case NEUTRAL:
-			printf("NEUTRAL");
-			break;
-		
-		case UP:
-			printf("UP");
-			break;
+		direction dir = get_joy_direction();
 
-		case DOWN:
-			printf("DOWN");
-			break;
-
-		case LEFT:
-			printf("LEFT");
-			break;
-
-		case RIGHT:
-			printf("RIGHT");
-			break;
-
-		case UNDEFINED:
-			printf("????");
-			break;
-		
-		default:
-			break;
-		}	
-
-		_delay_ms(1000);
-		*/
-		char c = USART_Receive(NULL);
-		printf("%c", c);
-		OLED_write(&oledh, framebuffer);
+		if (last_dir == NEUTRAL && dir != NEUTRAL){
+			if(dir == DOWN){
+				next_sub_menu();
+			}else if (dir == UP){
+				previous_sub_menu();
+			}else if (dir == RIGHT){
+				next_menu();
+			}else if (dir == LEFT){
+				previous_menu();
+			}
+			render_menu(&tbh);
+			OLED_write(&oledh, framebuffer);
+		}
+		last_dir = dir;
     }
 }
