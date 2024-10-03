@@ -16,6 +16,6 @@ extern const unsigned char font8[95][8];
 // Font 5x7 - normal
 extern const unsigned char font5[95][5];
 // Font 4x6 - Small
-extern const unsigned char  font4[95][4];
+extern const unsigned char font4[95][4];
 
 #endif /* FONTS_H_ */

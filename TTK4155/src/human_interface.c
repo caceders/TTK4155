@@ -56,8 +56,6 @@ void read_human_interface(){
     ADC_read(&HI.adc);
     HI.joy_position.x_pos = HI.adc.ch[2] - HI.joy_calibration[0];
     HI.joy_position.y_pos = HI.adc.ch[3] - HI.joy_calibration[1];
-
-    printf("\n\r left:%d, right%d\n\r", HI.adc.ch[0], HI.adc.ch[1]);
     
     int16_t x = HI.joy_position.x_pos;
     int16_t y = HI.joy_position.y_pos;

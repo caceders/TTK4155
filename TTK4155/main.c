@@ -18,6 +18,7 @@
 #include "textbox.h"
 #include "menu_navigation.h"
 #include "menu.h"
+#include "mcp2515.h"
 
 #define BAUD 9600
 
@@ -64,9 +65,20 @@ int main(void)
 	OLED_write(&oledh, framebuffer);
 
 	//enable pullup on joystick button
-	PORTB |= (1 << PIN1);
+	//PORTB |= (1 << PIN1);
+
+	MCP2515_init();
+	printf("SPCR = %u\n\r", SPCR);
+
 
 	printf("Hello world!\n\r");
+	MCP2515_write(0x0F, 63);
+	printf("Written to mcp\n\r");
+	uint8_t val = MCP2515_read(0x0F);
+
+	
+
+	printf("MCP magic canary value %u\n\r", val);
 
 	direction last_dir = NEUTRAL;
 
