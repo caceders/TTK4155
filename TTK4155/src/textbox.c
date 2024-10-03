@@ -79,6 +79,15 @@ void textbox_print(textbox_handle_t* tbh, char* string){
         }
     }
 }
+void textbox_clear(textbox_handle_t* tbh){
+    uint8_t background_fill = 0;
+    if(tbh->inverted){
+        background_fill = 0xFF;
+    }
+    for (int i = 0; i < tbh->rows*tbh->pixel_width; i++){
+        tbh->framebuffer[i] = background_fill;
+    }
+}
 
 void textbox_println(textbox_handle_t* tbh, char* string){
     textbox_print(tbh, string);

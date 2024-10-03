@@ -19,6 +19,7 @@ typedef struct textbox_handle_t{
 void textbox_get_default(textbox_handle_t* tbh, char* framebuffer);
 void textbox_put_char(textbox_handle_t* tbh, char c);
 void textbox_newline(textbox_handle_t* tbh);
+void textbox_clear(textbox_handle_t* tbh);
 void textbox_print(textbox_handle_t* tbh, char* string);
 void textbox_println(textbox_handle_t* tbh, char* string);
 
