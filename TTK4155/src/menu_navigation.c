@@ -16,9 +16,10 @@ void next_sub_menu(){
 }
 
 void previous_sub_menu(){
-    active_menu->selected_sub_menu --;
-    if(active_menu->selected_sub_menu < 0){
-        active_menu->selected_sub_menu = active_menu->num_sub_menus;
+    if(active_menu->selected_sub_menu == 0){
+        active_menu->selected_sub_menu = active_menu->num_sub_menus - 1;
+    }else{
+        active_menu->selected_sub_menu --;
     }
 }
 

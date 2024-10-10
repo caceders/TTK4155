@@ -34,7 +34,7 @@ void init_human_interface(){
 	PORTB |= (1 << PIN1);
 
     //Hardcoded deadzone
-    HI.deadzone_size = 6;
+    HI.deadzone_size = 50;
 }
 
 void calibrate_joy_position(){
