@@ -1,13 +1,16 @@
 LDSCRIPT = sam/flash.ld
 BOOTUP = sam/sam3x/source/exceptions.c sam/sam3x/source/startup_sam3x.c sam/sam3x/source/system_sam3x.c
 MCUTYPE = __SAM3X8E__
+
+SOURCE_DIRS := drivers src
+INCLUDE_DIRS := drivers include
+# List all source files to be compiled; separate with space
 # List all source files to be compiled; separate with whitespace.
 # In particular, remember to add the UART and CAN starter files.
 # Use relative file paths.
 SOURCE_FILES=$(BOOTUP) 
 	main.c
-#   filename1.h
-#   filename2.h
+	$(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
 
 # Feel free to ignore anything below this line
 VPATH:= $(dir $(SOURCE_FILES))
@@ -25,6 +28,7 @@ LDFLAGS:= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 -Wl,--gc-sections
 CFLAGS:= -mcpu=cortex-m3 -mthumb -g -std=c11 -MMD
 CFLAGS+= -I sam -I sam/sam3x/include -I sam/sam3x/source -I sam/cmsis -I .
 CFLAGS+= -D $(MCUTYPE)
+CFLAGS+= $(foreach dir, $(INCLUDE_DIRS), -I$(dir))
 
 .DEFAULT_GOAL := $(ELF)
 # compile and generate dependancy info
