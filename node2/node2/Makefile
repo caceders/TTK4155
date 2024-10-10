@@ -9,8 +9,8 @@ INCLUDE_DIRS := drivers include
 # In particular, remember to add the UART and CAN starter files.
 # Use relative file paths.
 SOURCE_FILES=$(BOOTUP) 
-	main.c
-	$(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
+SOURCE_FILES+=main.c
+SOURCE_FILES+=$(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
 
 # Feel free to ignore anything below this line
 VPATH:= $(dir $(SOURCE_FILES))
