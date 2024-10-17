@@ -70,7 +70,17 @@ int main(void)
 
 	MCP2515_init();
 	//printf("SPCR = %u\n\r", SPCR);
-	MCP2515_set_mode(MCP_MODE_LOOPBACK);
+
+	//Set bit timing for can - values standard values j.f chattarn
+	//Nominal bitrate target = 125 kbit/s
+	MCP2515_set_bit_timing(1, 5, 6, 4, 1);
+
+	//uint8_t cnf1 = MCP2515_read(MCP_CNF_1);
+	//uint8_t cnf2 = MCP2515_read(MCP_CNF_2);
+	//uint8_t cnf3 = MCP2515_read(MCP_CNF_3);
+	//printf("%x and %x and %x", cnf1, cnf2, cnf3);
+
+	MCP2515_set_mode(MCP_MODE_NORMAL);
 
 	printf("Hello world!\n\r");
 	

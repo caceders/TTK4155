@@ -113,3 +113,14 @@ void MCP2515_reset(){
     
     deselect_slave();
 }
+
+void MCP2515_set_bit_timing(uint8_t BRP, uint8_t prop_seg_TQ, uint8_t phase_seg_1_TQ, uint8_t phase_seg_2_TQ, uint8_t sjw_TQ){ 
+    MCP2515_write(MCP_CNF_3, phase_seg_2_TQ); // Assume user passes SOF and WAKFIL to 0
+    phase_seg_1_TQ = phase_seg_1_TQ << 3;
+    phase_seg_1_TQ |= 0b10000000; // Set BTLMODE = 1
+    uint8_t cnf_2 = phase_seg_1_TQ | prop_seg_TQ; // Assume user only write lower bits of prop_seg_TQ
+    MCP2515_write(MCP_CNF_2, cnf_2);
+
+    uint8_t cnf_1 = BRP | (sjw_TQ << 6);
+    MCP2515_write(MCP_CNF_1, cnf_1);
+}

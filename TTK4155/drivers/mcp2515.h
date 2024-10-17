@@ -52,6 +52,12 @@ typedef enum{
     MCP_MODE_CONFIG = 0b100,
 }MCP_mode;
 
+typedef enum{
+    MCP_CNF_1 = 0b00101010,
+    MCP_CNF_2 = 0b00101001,
+    MCP_CNF_3 = 0b00101000,
+
+}MCP_CNF_reg;
 
 
 
@@ -75,5 +81,7 @@ uint8_t MCP2515_read_status();
 void MCP2515_bit_modify(uint8_t addr, uint8_t mask, uint8_t data);
 
 void MCP2515_reset();
+
+void MCP2515_set_bit_timing(uint8_t BRP, uint8_t prop_seg_TQ, uint8_t phase_seg_1_TQ, uint8_t phase_seg_2_TQ, uint8_t sjw_TQ);
 
 #endif
