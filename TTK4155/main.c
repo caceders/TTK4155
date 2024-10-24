@@ -73,7 +73,7 @@ int main(void)
 
 	//Set bit timing for can - values standard values j.f chattarn
 	//Nominal bitrate target = 125 kbit/s
-	MCP2515_set_bit_timing(1, 5, 6, 4, 1);
+	MCP2515_set_bit_timing(3, 4, 5, 3, 0);
 
 	//uint8_t cnf1 = MCP2515_read(MCP_CNF_1);
 	//uint8_t cnf2 = MCP2515_read(MCP_CNF_2);
@@ -130,25 +130,19 @@ int main(void)
 
 	direction last_dir = NEUTRAL;
 
+	can_msg joy_msg;
+
+	joy_msg.data_length = 1;
+	joy_msg.id = 0x321;
     while (1) 
     {
-		/*read_human_interface();
+		read_human_interface();
 		
-		direction dir = get_joy_direction();
+		joy_msg.payload[0] = (uint8_t)get_joy_direction();
 
-		if (last_dir == NEUTRAL && dir != NEUTRAL){
-			if(dir == DOWN){
-				next_sub_menu();
-			}else if (dir == UP){
-				previous_sub_menu();
-			}else if (dir == RIGHT){
-				next_menu();
-			}else if (dir == LEFT){
-				previous_menu();
-			}
-			render_menu(&tbh);
-			OLED_write(&oledh, framebuffer);
-		}
-		last_dir = dir;*/
+		can_transmit(&msg);
+
+		_delay_ms(1000);
+
     }
 }
