@@ -1,12 +1,16 @@
 LDSCRIPT = sam/flash.ld
 BOOTUP = sam/sam3x/source/exceptions.c sam/sam3x/source/startup_sam3x.c sam/sam3x/source/system_sam3x.c
 MCUTYPE = __SAM3X8E__
+# List all source files (i.e. .c files) to be compiled; separate with whitespace.
+
+
 
 SOURCE_DIRS := drivers src
 INCLUDE_DIRS := drivers include
 # List all source files to be compiled; separate with space
-# List all source files to be compiled; separate with whitespace.
 # In particular, remember to add the UART and CAN starter files.
+# Use relative file paths and a backslash before newline.
+# Do NOT use a backslash after the last file.
 # Use relative file paths.
 SOURCE_FILES=$(BOOTUP) 
 SOURCE_FILES+=main.c
@@ -67,4 +71,3 @@ flash: $(ELF)
 
 # pull in dependencies
 -include	$(OBJS:.o=.d)
-

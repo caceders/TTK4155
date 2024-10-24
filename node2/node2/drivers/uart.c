@@ -12,7 +12,7 @@ struct RingBuf {
     int removeIdx;
     int length;
 };
-RingBuf RingBuf = {0};
+RingBuf ringBuf = {0};
 
 
 int push(RingBuf* rb, uint8_t val){
@@ -64,7 +64,7 @@ void uart_tx(uint8_t val){
 }
 
 uint8_t uart_rx(uint8_t* val){
-    return pop(&RingBuf, val);
+    return pop(&ringBuf, val);
 }    
 
 int uart_flush(char* buf, int len){
@@ -76,7 +76,7 @@ int uart_flush(char* buf, int len){
         }                
     }    
     return r;
-}    
+}
 
 
 void UART_Handler(){
@@ -90,7 +90,7 @@ void UART_Handler(){
     
     // Receive ready: push to ring buffer
     if(status & UART_SR_RXRDY){
-        if(!push(&RingBuf, UART->UART_RHR & 0xff)){
+        if(!push(&ringBuf, UART->UART_RHR & 0xff)){
             printf("UART receive buffer full\n");
         }
     }
