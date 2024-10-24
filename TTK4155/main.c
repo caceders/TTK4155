@@ -20,6 +20,7 @@
 #include "menu.h"
 #include "mcp2515.h"
 #include "can.h"
+#include "pwm.h"
 
 #define BAUD 9600
 
@@ -69,7 +70,7 @@ int main(void)
 	//PORTB |= (1 << PIN1);
 
 	MCP2515_init();
-	//printf("SPCR = %u\n\r", SPCR);
+	//printf("SPCR = %u\r\n", SPCR);
 
 	//Set bit timing for can - values standard values j.f chattarn
 	//Nominal bitrate target = 125 kbit/s
@@ -80,9 +81,11 @@ int main(void)
 	//uint8_t cnf3 = MCP2515_read(MCP_CNF_3);
 	//printf("%x and %x and %x", cnf1, cnf2, cnf3);
 
+	pwm_init();
+
 	MCP2515_set_mode(MCP_MODE_NORMAL);
 
-	printf("Hello world!\n\r");
+	printf("Hello world!\r\n");
 	
 	can_msg msg;
 
@@ -95,7 +98,7 @@ int main(void)
 	msg.payload[5] = 0x5B;
 	msg.payload[6] = 0x5A;
 	msg.payload[7] = 0x59;
-	msg.id = 0x3C2;
+	msg.id = 0xFF;
 
 	can_transmit(&msg);
 
@@ -103,29 +106,29 @@ int main(void)
 
 	uint8_t intf = MCP2515_read(MCP_CANINTF_ADDR);
 	if(intf & 1){
-		printf("Okily dokily\n\r");
+		printf("Okily dokily\r\n");
 		can_msg rmsg;
-		//printf("Still Okily dokily\n\r");
+		//printf("Still Okily dokily\r\n");
 		can_receive(&rmsg);
-		printf("ding-dong-diddily-do, message with ID %X has been looped back to you: 0: %X, 1: %X\n\r", rmsg.id, rmsg.payload[0], rmsg.payload[1]);
+		printf("ding-dong-diddily-do, message with ID %X has been looped back to you: 0: %X, 1: %X\r\n", rmsg.id, rmsg.payload[0], rmsg.payload[1]);
 	}else{
-		printf("Stranger danger\n\r");	
+		printf("Stranger danger\r\n");	
 	}
 
 	//MCP2515_write(0x0C, 63);
-	//printf("Written to mcp\n\r");
+	//printf("Written to mcp\r\n");
 	//uint8_t val = MCP2515_read(0x0F);
-	//printf("MCP magic canary value %u\n\r", val);
+	//printf("MCP magic canary value %u\r\n", val);
 
 	/* uint8_t received[8];
 	MCP2515_read_rx_buffer(LOAD_RXB0_SIDH, received);
 	printf("Magic values in buffer register \n");
 	for(uint8_t i = 0; i <8; i++){
-		printf("%u\n\r",received[i]);
+		printf("%u\r\n",received[i]);
 	} */
 
 	//uint8_t val = MCP2515_read_status(0x0C, 63);
-	//printf("MCP status value %u\n\r", val);
+	//printf("MCP status value %u\r\n", val);
 
 
 	direction last_dir = NEUTRAL;
@@ -133,14 +136,14 @@ int main(void)
 	can_msg joy_msg;
 
 	joy_msg.data_length = 1;
-	joy_msg.id = 0x321;
+	joy_msg.id = 0x11;
     while (1) 
     {
 		read_human_interface();
 		
 		joy_msg.payload[0] = (uint8_t)get_joy_direction();
 
-		can_transmit(&msg);
+		can_transmit(&joy_msg);
 
 		_delay_ms(1000);
 
