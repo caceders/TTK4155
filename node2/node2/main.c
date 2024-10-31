@@ -12,6 +12,7 @@
 #include "uart.h"
 #include "can.h"
 #include "pwm.h"
+#include "ir.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -37,6 +38,8 @@ typedef enum{
 
 }direction;
 
+
+
 int main(void)
 {
     /* Initialize the SAM system */
@@ -58,52 +61,65 @@ int main(void)
     can_init(caninit, 0);
 
     pwm_init();
+    //while(1);
+
+    ir_init();
 
     
 
     printf("Hello world!\r\n");
 
-    CanMsg msg;
-    msg.length = 1;
-    msg.id = 0x123;
-    msg.byte[0] = 0b01010101;
+    CanMsg rx_msg;
+
+    uint8_t state_playing = 0;
+
+    int16_t joy_x = 0;
+    int16_t joy_y = 0;
+    uint8_t slider_l = 0;
+    uint8_t slider_r = 0;
+    uint8_t button_r = 0;
+    uint8_t button_l = 0;
+    uint8_t button_j = 0;
+
     while (1){
-        if(can_rx(&msg)){
-            if (msg.id = 0x11){
-                printf("joystick position:");
-                switch((direction) msg.byte[0]){
-                    case NEUTRAL:
-                        printf("NEUTRAL\r\n");
-                        servo_update_angle(90);
-                        break;
-                    case UP:
-                        printf("UP\r\n");
-                        servo_update_angle(135);
-                        break;
-                    case DOWN:
-                        printf("DOWN\r\n");
-                        servo_update_angle(45);
-                        break;
-                    case LEFT:
-                        printf("LEFT\r\n");
-                        servo_update_angle(0);
-                        break;
-                    case RIGHT:
-                        printf("RIGHT\r\n");
-                        servo_update_angle(180);
-                        break;
-                    default:
-                        printf("Unknown??\r\n");
-                        break;
-                }
+        if(can_rx(&rx_msg)){
+            if(rx_msg.id == 0xAA){
+                state_playing = 1;
+                printf("playing...\r\n");
+                get_ir_flag(); //dummy read to clear flag;
+            }else if(rx_msg.id == 0x22){
+                joy_x = rx_msg.byte[0] | (rx_msg.byte[1] << 8);
+                joy_y = rx_msg.byte[2] | (rx_msg.byte[3] << 8);
+                slider_l = rx_msg.byte[4];
+                slider_r = rx_msg.byte[5];
+                button_l = rx_msg.byte[6] & 1;
+                button_r = rx_msg.byte[6] & (1<<1);
+                button_j = rx_msg.byte[6] & (1<<2);
+
             }else{
-                printf("Happy day caloo calay message of length %d was received, Yay!\r\n", msg.length);
-                printf("Id of sender: %x\r\n", msg.id);
-                for (int i = 0; i < msg.length; i++){
-                    printf("byte[%d] = %x\r\n", i, msg.byte[i]);
+                printf("Happy day caloo calay message of length %d was received, Yay!\r\n", rx_msg.length);
+                printf("Id of sender: %x\r\n", rx_msg.id);
+                for (int i = 0; i < rx_msg.length; i++){
+                    printf("byte[%d] = %x\r\n", i, rx_msg.byte[i]);
                 }
             }
         }
 
+        if(state_playing){
+            servo_update_angle(slider_r*180/256);
+            //motor
+            if(get_ir_flag()){
+                printf("game over :(\r\n");
+                state_playing = 0;
+                CanMsg tx_msg;
+                tx_msg.id = 0x01;
+                can_tx(tx_msg);
+                servo_update_angle(90); //neutral position
+
+            }
+        }
+
     }
+    
+   
 }
