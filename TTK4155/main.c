@@ -81,7 +81,7 @@ int main(void)
 	//uint8_t cnf3 = MCP2515_read(MCP_CNF_3);
 	//printf("%x and %x and %x", cnf1, cnf2, cnf3);
 
-	pwm_init();
+	
 
 	MCP2515_set_mode(MCP_MODE_NORMAL);
 

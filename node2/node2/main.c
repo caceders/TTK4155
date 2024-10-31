@@ -11,6 +11,7 @@
 #include "sam.h"
 #include "uart.h"
 #include "can.h"
+#include "pwm.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -56,6 +57,8 @@ int main(void)
     //BRP = (F_CPU/BAUD)/(how many time quanta in one bit time) - 1
     can_init(caninit, 0);
 
+    pwm_init();
+
     
 
     printf("Hello world!\r\n");
@@ -71,18 +74,23 @@ int main(void)
                 switch((direction) msg.byte[0]){
                     case NEUTRAL:
                         printf("NEUTRAL\r\n");
+                        servo_update_angle(90);
                         break;
                     case UP:
                         printf("UP\r\n");
+                        servo_update_angle(135);
                         break;
                     case DOWN:
                         printf("DOWN\r\n");
+                        servo_update_angle(45);
                         break;
                     case LEFT:
                         printf("LEFT\r\n");
+                        servo_update_angle(0);
                         break;
                     case RIGHT:
                         printf("RIGHT\r\n");
+                        servo_update_angle(180);
                         break;
                     default:
                         printf("Unknown??\r\n");
