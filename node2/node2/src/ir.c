@@ -11,7 +11,7 @@ void ir_init(){
 
     //enable debouncing filter
     PIOC->PIO_DIFSR |= PIO_PC22;
-    PIOC->PIO_SCDR = 63;
+    PIOC->PIO_SCDR = 1024;
     PIOC->PIO_IFER |= PIO_PC22;
 
     

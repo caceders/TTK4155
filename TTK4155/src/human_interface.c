@@ -16,6 +16,9 @@ typedef struct human_interface_handle{
 
     uint8_t deadzone_size;
 
+    uint8_t slider_l;
+    uint8_t slider_r;
+
     unsigned char joy_button;
     unsigned char right_button;
 	unsigned char left_button;
@@ -47,6 +50,16 @@ position get_joy_position(){
     return HI.joy_position;
 }
 
+uint8_t get_slider_l(){
+    return HI.slider_l;
+}
+
+uint8_t get_slider_r(){
+    return HI.slider_r;
+}
+
+
+
 direction get_joy_direction(){
     return HI.joy_direction;
 };
@@ -56,6 +69,8 @@ void read_human_interface(){
     ADC_read(&HI.adc);
     HI.joy_position.x_pos = HI.adc.ch[2] - HI.joy_calibration[0];
     HI.joy_position.y_pos = HI.adc.ch[3] - HI.joy_calibration[1];
+    HI.slider_l = HI.adc.ch[0];
+    HI.slider_r = HI.adc.ch[1];
     
     int16_t x = HI.joy_position.x_pos;
     int16_t y = HI.joy_position.y_pos;

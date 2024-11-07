@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "menu_navigation.h"
+#include "game.h"
 
 menu_handle_t main_menu, high_score_menu, settings_menu, credits_menu, play_game_menu, contrast_menu, brightness_menu, difficulty_menu;
 
@@ -21,11 +22,11 @@ void add_sub_menu(menu_handle_t* parent, menu_handle_t* child, char* child_name)
     child->parent_menu = parent;
 }
 
-
 void initialize_menu(){
 
     create_menu(&main_menu, "Main menu");
     add_sub_menu(&main_menu, &play_game_menu, "Play Game");
+    play_game_menu.action = play_game;
     add_sub_menu(&main_menu, &high_score_menu, "View high score");
     add_sub_menu(&main_menu, &settings_menu, "Settings");
     add_sub_menu(&main_menu, &credits_menu, "Credits");

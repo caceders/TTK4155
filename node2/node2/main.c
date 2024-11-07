@@ -13,6 +13,7 @@
 #include "can.h"
 #include "pwm.h"
 #include "ir.h"
+#include "encoder.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -65,6 +66,8 @@ int main(void)
 
     ir_init();
 
+    encoder_init();
+
     
 
     printf("Hello world!\r\n");
@@ -96,6 +99,8 @@ int main(void)
                 button_r = rx_msg.byte[6] & (1<<1);
                 button_j = rx_msg.byte[6] & (1<<2);
 
+                printf("encoder: %d\r\n", encoder_read());
+
             }else{
                 printf("Happy day caloo calay message of length %d was received, Yay!\r\n", rx_msg.length);
                 printf("Id of sender: %x\r\n", rx_msg.id);
@@ -106,6 +111,16 @@ int main(void)
         }
 
         if(state_playing){
+            int32_t slider_l_int = slider_l - 128;
+            if(slider_l_int > 0){
+                motor_update_direction(MOTOR_DIR_RIGHT);
+            }else{
+                motor_update_direction(MOTOR_DIR_LEFT);
+            }
+
+
+            motor_update_power(abs(slider_l_int));
+
             servo_update_angle(slider_r*180/256);
             //motor
             if(get_ir_flag()){
@@ -115,6 +130,7 @@ int main(void)
                 tx_msg.id = 0x01;
                 can_tx(tx_msg);
                 servo_update_angle(90); //neutral position
+                motor_update_power(0);
 
             }
         }

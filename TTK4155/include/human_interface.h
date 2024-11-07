@@ -26,6 +26,9 @@ position get_joy_position();
 
 direction get_joy_direction();
 
+uint8_t get_slider_l();
+uint8_t get_slider_r();
+
 uint8_t get_r();
 uint8_t get_l();
 uint8_t get_j();

@@ -20,13 +20,14 @@
 #include "menu.h"
 #include "mcp2515.h"
 #include "can.h"
-#include "pwm.h"
 
 #define BAUD 9600
 
 char* framebuffer = (uint8_t*)0x1800; //SRAM address
 
 textbox_handle_t tbh;
+
+OLED_handle_t oledh;
 
 int my_putc(char data, FILE* f )
 {
@@ -50,7 +51,7 @@ int main(void)
 	//volatile char* sram_addr = 0x1801;
 	//volatile char* oled_addr = 0x1001;
 
-	OLED_handle_t oledh;
+	
 	oledh.cmd_addr = (uint8_t*)0x1000;
 	oledh.data_addr = (uint8_t*)0x1200;
 	oledh.columns = 128;
@@ -85,35 +86,7 @@ int main(void)
 
 	MCP2515_set_mode(MCP_MODE_NORMAL);
 
-	printf("Hello world!\r\n");
-	
-	can_msg msg;
-
-	msg.data_length = 8;
-	msg.payload[0] = 0xA6;
-	msg.payload[1] = 0x5F;
-	msg.payload[2] = 0x5E;
-	msg.payload[3] = 0x5D;
-	msg.payload[4] = 0x5C;
-	msg.payload[5] = 0x5B;
-	msg.payload[6] = 0x5A;
-	msg.payload[7] = 0x59;
-	msg.id = 0xFF;
-
-	can_transmit(&msg);
-
-	_delay_ms(10);
-
-	uint8_t intf = MCP2515_read(MCP_CANINTF_ADDR);
-	if(intf & 1){
-		printf("Okily dokily\r\n");
-		can_msg rmsg;
-		//printf("Still Okily dokily\r\n");
-		can_receive(&rmsg);
-		printf("ding-dong-diddily-do, message with ID %X has been looped back to you: 0: %X, 1: %X\r\n", rmsg.id, rmsg.payload[0], rmsg.payload[1]);
-	}else{
-		printf("Stranger danger\r\n");	
-	}
+	printf("Hello world!\n\r");
 
 	//MCP2515_write(0x0C, 63);
 	//printf("Written to mcp\r\n");
@@ -133,12 +106,9 @@ int main(void)
 
 	direction last_dir = NEUTRAL;
 
-	can_msg joy_msg;
-
-	joy_msg.data_length = 1;
-	joy_msg.id = 0x11;
     while (1) 
     {
+		/*
 		read_human_interface();
 		
 		joy_msg.payload[0] = (uint8_t)get_joy_direction();
@@ -146,6 +116,26 @@ int main(void)
 		can_transmit(&joy_msg);
 
 		_delay_ms(1000);
+		*/
+
+		read_human_interface();
+		
+		direction dir = get_joy_direction();
+
+		if (last_dir == NEUTRAL && dir != NEUTRAL){
+			if(dir == DOWN){
+				next_sub_menu();
+			}else if (dir == UP){
+				previous_sub_menu();
+			}else if (dir == RIGHT){
+				next_menu();
+			}else if (dir == LEFT){
+				previous_menu();
+			}
+			render_menu(&tbh);
+			OLED_write(&oledh, framebuffer);
+		}
+		last_dir = dir;
 
     }
 }

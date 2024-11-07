@@ -25,9 +25,10 @@ void previous_sub_menu(){
 
 void next_menu(){
     if(active_menu->num_sub_menus == 0){
-        if (active_menu->sub_menus[active_menu->selected_sub_menu]->action != NULL){
-            active_menu->sub_menus[active_menu->selected_sub_menu]->action();
-        }
+        return;
+    }else if (active_menu->sub_menus[active_menu->selected_sub_menu]->action != NULL){
+        active_menu->sub_menus[active_menu->selected_sub_menu]->action();
+        printf("action complete\r\n");
     }else{
         set_active_menu(active_menu->sub_menus[active_menu->selected_sub_menu]);
     }

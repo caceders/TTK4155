@@ -30,16 +30,13 @@ void can_receive(can_msg* msg){
 
     uint8_t control[5];
 
-    printf("Preparing to read msg control\n\r");
     MCP2515_read_rx_buffer(LOAD_RXB0_SIDH, control, sizeof(control));
-    printf("Read msg control\n\r");
     uint8_t id_high, id_low;
     id_high = control[0];
     id_low = control[1];
     msg->id = (id_high << 3) | (id_low >> 5); 
     msg->data_length = control[4] & 0xF;
 
-    printf("Length of recieved message = %u\n\r", msg->data_length);
     MCP2515_read_rx_buffer(LOAD_RXB0_DATA, msg->payload, msg->data_length);
 
     //printf("Read msg\n\r");
