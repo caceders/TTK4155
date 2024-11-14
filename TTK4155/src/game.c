@@ -49,8 +49,21 @@ void play_game(){
             can_receive(&rx_msg);
             if (rx_msg.id == 0x01){
                 printf("game over\r\n");
-                return;
-            }
+                printf("SCORE: %d", score);
+
+                tbh.carriage_x = 0;
+                tbh.carriage_y = 0;
+                textbox_clear(&tbh);
+                snprintf(score_str, 10, "%d", score/10);
+                tbh.inverted = 1;
+                textbox_println(&tbh, "GAME OVER!");
+                tbh.inverted = 0;
+                textbox_println(&tbh, "\r\nSCORE:");
+                textbox_print(&tbh, score_str);
+                OLED_write(&oledh, framebuffer);
+                _delay_ms(5000);
+            }   
+            return;
         }
 
         if (score %10 == 0){

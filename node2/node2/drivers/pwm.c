@@ -50,6 +50,7 @@ void pwm_init(){
 }
 
 void motor_update_power(uint32_t val){
+    // 4095 max
     PWM->PWM_CH_NUM[0].PWM_CDTYUPD  = val;
 }
 

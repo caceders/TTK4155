@@ -14,6 +14,8 @@
 #include "pwm.h"
 #include "ir.h"
 #include "encoder.h"
+#include "PID.h"
+#include "pulse.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -28,6 +30,8 @@
 #define F_CPU 84000000
 #define _XTAL_FREQ 84000000
 #define CAN_BAUD 125000
+
+const uint32_t MAX_RANGE_MOTOR = 5644;
 
 typedef enum{
     NEUTRAL = 0,
@@ -68,7 +72,7 @@ int main(void)
 
     encoder_init();
 
-    
+    configure_timer_for_pulse(100000);
 
     printf("Hello world!\r\n");
 
@@ -83,24 +87,53 @@ int main(void)
     uint8_t button_r = 0;
     uint8_t button_l = 0;
     uint8_t button_j = 0;
+    uint8_t prev_button_j = 0;
+
+    int16_t motor_power = 0;
+    motor_dir_t motor_direction;
 
     while (1){
         if(can_rx(&rx_msg)){
             if(rx_msg.id == 0xAA){
                 state_playing = 1;
                 printf("playing...\r\n");
-                get_ir_flag(); //dummy read to clear flag;
+                get_ir_flag(); //dummy read to clear flagtarget_position - current_position;
             }else if(rx_msg.id == 0x22){
                 joy_x = rx_msg.byte[0] | (rx_msg.byte[1] << 8);
                 joy_y = rx_msg.byte[2] | (rx_msg.byte[3] << 8);
                 slider_l = rx_msg.byte[4];
                 slider_r = rx_msg.byte[5];
                 button_l = rx_msg.byte[6] & 1;
-                button_r = rx_msg.byte[6] & (1<<1);
-                button_j = rx_msg.byte[6] & (1<<2);
+                button_r = (rx_msg.byte[6] >> 1) & 1;
+                button_j = (rx_msg.byte[6] >> 2) & 1;
 
-                printf("encoder: %d\r\n", encoder_read());
+                if (button_j == 1 & prev_button_j == 0){
+                    generate_pulse();
+                }
+                prev_button_j = button_j;
 
+                // Calculate motor input
+
+                int32_t current_position = encoder_read();
+                int32_t target_position = ((slider_l)* MAX_RANGE_MOTOR)/255;
+                int32_t PID_output = get_PID_output(current_position, target_position);
+                motor_power = abs(PID_output/100);
+                
+                //motor_power = abs(slider_l - 128);
+                
+                if(PID_output > 0){
+                //if(target_position - current_position > 0){
+                    motor_direction = MOTOR_DIR_LEFT;
+                }else{
+                    motor_direction = MOTOR_DIR_RIGHT;
+                }
+                //printf("PID_output: %d\r\n", PID_output);
+                //printf("motor power: %d\r\n", motor_power);
+                //printf("motor direction: %d\r\n", motor_direction);
+//
+                //printf("target pos: %d\r\n", target_position);
+                //printf("encoder: %d\r\n", encoder_read());
+//
             }else{
                 printf("Happy day caloo calay message of length %d was received, Yay!\r\n", rx_msg.length);
                 printf("Id of sender: %x\r\n", rx_msg.id);
@@ -111,15 +144,9 @@ int main(void)
         }
 
         if(state_playing){
-            int32_t slider_l_int = slider_l - 128;
-            if(slider_l_int > 0){
-                motor_update_direction(MOTOR_DIR_RIGHT);
-            }else{
-                motor_update_direction(MOTOR_DIR_LEFT);
-            }
 
-
-            motor_update_power(abs(slider_l_int));
+            motor_update_direction(motor_direction);
+            motor_update_power(motor_power);
 
             servo_update_angle(slider_r*180/256);
             //motor
